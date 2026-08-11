@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EXAMORA — AI-Powered Exam Preparation & Adaptive Study Planner</title>
+    <style>
+        :root {
+            --bg-color: #060816;
+            --card-bg: rgba(13, 18, 36, 0.6);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --accent-primary: #6366f1;
+            --accent-secondary: #a855f7;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 40%);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            perspective: 1000px;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            text-align: center;
+            transform: translateZ(0);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px) rotateX(1deg) rotateY(-1deg);
+            box-shadow: 0 30px 60px rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.25);
+        }
+
+        .logo-container {
+            margin-bottom: 24px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .logo-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, var(--accent-primary) 0%, transparent 70%);
+            filter: blur(10px);
+            z-index: 1;
+            opacity: 0.8;
+            animation: pulse 3s infinite ease-in-out;
+        }
+
+        .logo-svg {
+            width: 72px;
+            height: 72px;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.6));
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--text-primary) 30%, #a5b4fc 70%, var(--accent-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .status-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            text-align: left;
+            transition: all 0.3s;
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+        }
+
+        .status-badge.checking {
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+        }
+
+        .status-badge.success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
+        }
+
+        .status-badge.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.1);
+        }
+
+        .status-details {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+
+        .status-details code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #f43f5e;
+        }
+
+        .btn-test {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            outline: none;
+        }
+
+        .btn-test:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-test:active {
+            transform: translateY(1px);
+        }
+
+        .btn-test::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .btn-test:hover::before {
+            left: 100%;
+        }
+
+        .exam-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin: 4px;
+            font-size: 0.75rem;
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        footer {
+            margin-top: 24px;
+            font-size: 0.75rem;
+            color: #4b5563;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.9;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="glass-card">
+            <div class="logo-container">
+                <div class="logo-glow"></div>
+                <!-- 3D-inspired geometric SVG shield representing Examora -->
+                <svg class="logo-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="50,5 92,25 92,75 50,95 8,75 8,25" fill="url(#grad)" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+                    <polygon points="50,15 82,30 82,70 50,85 18,70 18,30" fill="rgba(13, 18, 36, 0.8)" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+                    <path d="M50 25 L70 45 L60 45 L60 65 L40 65 L40 45 L30 45 Z" fill="white" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.3))"/>
+                    <defs>
+                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#6366f1" />
+                            <stop offset="100%" stop-color="#a855f7" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
+
+            <h1>EXAMORA</h1>
+            <p class="subtitle">AI-Powered Exam Preparation & Adaptive Study Planner</p>
+
+            <div class="status-box" id="status-card">
+                <div class="status-header">
+                    <span>System Connection Status</span>
+                    <span class="status-badge checking" id="status-tag">Checking...</span>
+                </div>
+                <div class="status-details" id="status-info">
+                    Initializing verification test to confirm connection stack: <strong>Java (Jakarta Servlets) &rarr; JDBC &rarr; MySQL Database</strong>.
+                </div>
+            </div>
+
+            <button class="btn-test" id="btn-test-db" onclick="verifyDatabase()">Test Database Connection</button>
+
+            <footer>
+                EXAMORA &copy; 2026. Built with Servlet 6.0, Tomcat 11, and MySQL.
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // Auto-run connection test when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            verifyDatabase();
+        });
+
+        function verifyDatabase() {
+            const btn = document.getElementById('btn-test-db');
+            const tag = document.getElementById('status-tag');
+            const info = document.getElementById('status-info');
+            const card = document.getElementById('status-card');
+
+            btn.disabled = true;
+            btn.innerText = 'Verifying Connection...';
+            tag.className = 'status-badge checking';
+            tag.innerText = 'Checking...';
+
+            // Pointing to absolute path relative to context root
+            fetch('test-db')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status === 'SUCCESS') {
+                        tag.className = 'status-badge success';
+                        tag.innerText = 'Online';
+                        
+                        let examsHtml = data.seededExams.map(ex => `<span class="exam-tag">${ex.name} (${ex.year})</span>`).join('');
+                        
+                        info.innerHTML = `
+                            <p style="color: var(--success-color); font-weight: 600; margin-bottom: 8px;">&check; Connection Established Successfully!</p>
+                            <p style="margin-bottom: 8px;">${data.message}</p>
+                            <p style="font-size: 0.8rem; opacity: 0.8; margin-bottom: 8px;">Database: <code>${data.database}</code></p>
+                            <p style="font-weight: 600; font-size: 0.8rem; margin-bottom: 4px;">Seeded Exams Found:</p>
+                            <div>${examsHtml}</div>
+                        `;
+                        card.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                    } else {
+                        throw new Error(data.message || 'Unknown database error occurred.');
+                    }
+                })
+                .catch(error => {
+                    tag.className = 'status-badge error';
+                    tag.innerText = 'Error';
+                    
+                    info.innerHTML = `
+                        <p style="color: var(--error-color); font-weight: 600; margin-bottom: 8px;">&cross; Database Connection Failed</p>
+                        <p style="margin-bottom: 8px;">We could not connect to MySQL from our Java Servlet. Details:</p>
+                        <p style="background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; font-family: monospace; font-size: 0.75rem;">${error.message}</p>
+                        <div style="margin-top: 12px; font-size: 0.8rem; opacity: 0.9;">
+                            <strong>Troubleshooting checklist:</strong>
+                            <ul style="margin-left: 16px; margin-top: 4px;">
+                                <li>Is MySQL running on port <code>3306</code>?</li>
+                                <li>Did you run <code>database.sql</code> and <code>seed.sql</code> to create the database?</li>
+                                <li>Are the credentials in <code>application.properties</code> correct?</li>
+                            </ul>
+                        </div>
+                    `;
+                    card.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerText = 'Test Database Connection';
+                });
+        }
+    </script>
+</body>
+</html>

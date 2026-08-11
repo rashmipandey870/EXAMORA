@@ -1,0 +1,37 @@
+# Maven build output
+target/
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Compiled Java class files
+*.class
+
+# Log files
+*.log
+logs/
+
+# Sensitive configuration containing local secrets (DB passwords, AI API keys)
+src/main/resources/application.properties
+
+# IntelliJ IDEA files
+.idea/
+*.iml
+*.iws
+
+# Eclipse files
+.classpath
+.project
+.settings/
+.metadata/
+bin/
+
+# NetBeans files
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
