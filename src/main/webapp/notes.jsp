@@ -207,7 +207,7 @@
         <% if (rateLimited) { %>
             <div class="rate-limit-banner">
                 <span>⚠️</span>
-                <span><strong>Daily Generation Cap Reached:</strong> You have hit your limit of 15 Live AI note generations per 24 hours. Displaying high-quality offline reference notes instead.</span>
+                <span><strong>Daily Generation Cap Reached:</strong> You have hit your limit of 15 live study note generations per 24 hours. Displaying high-quality offline reference notes instead.</span>
             </div>
         <% } %>
 
@@ -220,7 +220,7 @@
                 <div>
                     <% if ("LIVE_AI".equals(noteSource)) { %>
                         <span class="badge-cache badge-live-ai">
-                            🤖 Live AI Generated
+                            📖 Live Study Guide
                         </span>
                     <% } else if ("LOCAL_MOCK".equals(noteSource)) { %>
                         <span class="badge-cache badge-local-mock">

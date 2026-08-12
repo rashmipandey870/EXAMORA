@@ -681,7 +681,7 @@
                                                                         <span>Weightage: <strong style="color: #fff;"><%= topic.getWeightage() != null ? topic.getWeightage() + "%" : "N/A" %></strong></span>
                                                                         <span>Yield Index: <strong style="color: var(--success-color);"><%= String.format("%.3f", topic.getComputedYieldScore()) %></strong></span>
                                                                     </div>
-                                                                    <a href="notes?topicId=<%= topic.getId() %>" style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); color: #fff; padding: 6px 14px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.78rem; box-shadow: 0 4px 10px rgba(99,102,241,0.25);">Read AI Notes &rarr;</a>
+                                                                    <a href="notes?topicId=<%= topic.getId() %>" style="background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); color: #fff; padding: 6px 14px; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 0.78rem; box-shadow: 0 4px 10px rgba(99,102,241,0.25);">Study Notes &rarr;</a>
                                                                 </div>
                                                                 
                                                                 <% if (topic.getPrerequisites() != null && !topic.getPrerequisites().isEmpty()) { %>
