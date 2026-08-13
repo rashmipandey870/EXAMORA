@@ -73,6 +73,20 @@ public class PYQQuestion {
         this.optionsJson = optionsJson;
     }
 
+    public java.util.Map<String, String> getParsedOptions() {
+        try {
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            return mapper.readValue(this.optionsJson,
+                new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, String>>() {});
+        } catch (Exception e) {
+            // This fallback should never trigger on real post-migration data.
+            // If it does, log loudly server-side — do not let it silently mask a real data problem.
+            System.err.println("CRITICAL: Failed to parse optionsJson for question ID " + this.getId()
+                + " — options_json value: " + this.optionsJson + " — error: " + e.getMessage());
+            return java.util.Collections.emptyMap();
+        }
+    }
+
     public String getCorrectAnswer() {
         return correctAnswer;
     }

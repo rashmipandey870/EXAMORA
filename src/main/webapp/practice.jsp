@@ -372,10 +372,7 @@
         <%
             if (questions != null && !questions.isEmpty()) {
                 for (PYQQuestion q : questions) {
-                    // Simple parse JSON array options
-                    String optJson = q.getOptionsJson();
-                    optJson = optJson.substring(2, optJson.length() - 2); 
-                    String[] options = optJson.split("\",\\s*\"");
+                    // Options parsed using Jackson from JSON Object keyed by letter (A, B, C, D)
         %>
                     <div class="q-card">
                         <div class="q-meta">
@@ -400,17 +397,24 @@
                         </div>
 
                         <div class="options-list">
-                            <% 
-                                char optLetter = 'A';
-                                for (String option : options) { 
-                                    String optionVal = String.valueOf(optLetter);
+                            <%
+                                java.util.Map<String, String> options = q.getParsedOptions();
+                                if (options.isEmpty()) {
                             %>
-                                    <label class="option-lbl">
-                                        <input type="radio" name="opt-<%= q.getId() %>" value="<%= optionVal %>">
-                                        <span><strong><%= optLetter++ %>.</strong> <%= option %></span>
-                                    </label>
-                            <% 
-                                } 
+                                    <p style="color: var(--error-color);">This question's answer options could not be loaded. Please report this question.</p>
+                            <%
+                                } else {
+                                    for (java.util.Map.Entry<String, String> entry : options.entrySet()) {
+                                        String optionVal = entry.getKey();
+                                        String optionText = entry.getValue();
+                            %>
+                                        <label class="option-lbl">
+                                            <input type="radio" name="opt-<%= q.getId() %>" value="<%= optionVal %>">
+                                            <span><strong><%= optionVal %>.</strong> <%= optionText %></span>
+                                        </label>
+                            <%
+                                    }
+                                }
                             %>
                         </div>
 
