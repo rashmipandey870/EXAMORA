@@ -115,4 +115,55 @@ public class PYQAttemptDAO {
         }
         return list;
     }
+
+    public List<Integer> getBookmarkedQuestionIds(int userId) {
+        List<Integer> list = new ArrayList<>();
+        String sql = "SELECT question_id FROM pyq_bookmarks WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(rs.getInt("question_id"));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting bookmarked question ids: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    public boolean toggleBookmark(int userId, int questionId) {
+        String checkSql = "SELECT id FROM pyq_bookmarks WHERE user_id = ? AND question_id = ?";
+        try (Connection conn = DBConnection.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(checkSql)) {
+                ps.setInt(1, userId);
+                ps.setInt(2, questionId);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        // Delete bookmark
+                        String deleteSql = "DELETE FROM pyq_bookmarks WHERE user_id = ? AND question_id = ?";
+                        try (PreparedStatement delPs = conn.prepareStatement(deleteSql)) {
+                            delPs.setInt(1, userId);
+                            delPs.setInt(2, questionId);
+                            return delPs.executeUpdate() > 0;
+                        }
+                    } else {
+                        // Insert bookmark
+                        String insertSql = "INSERT INTO pyq_bookmarks (user_id, question_id) VALUES (?, ?)";
+                        try (PreparedStatement insPs = conn.prepareStatement(insertSql)) {
+                            insPs.setInt(1, userId);
+                            insPs.setInt(2, questionId);
+                            return insPs.executeUpdate() > 0;
+                        }
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error toggling bookmark: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

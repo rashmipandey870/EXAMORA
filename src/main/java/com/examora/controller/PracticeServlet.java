@@ -43,12 +43,16 @@ public class PracticeServlet extends HttpServlet {
         List<PYQQuestion> questions = pyqDAO.getQuestionsForExam(activeExam.getId());
         List<com.examora.model.PYQCoverage> coverageList = new com.examora.dao.PYQCoverageDAO().getCoverageForSubject(activeExam.getId(), 1);
         Map<String, Integer> coverageStats = new com.examora.dao.PYQCoverageDAO().getSummaryStats(activeExam.getId());
+        List<com.examora.model.PYQAttempt> userAttempts = new com.examora.dao.PYQAttemptDAO().getAttemptsForUser(user.getId());
+        List<Integer> bookmarkedIds = new com.examora.dao.PYQAttemptDAO().getBookmarkedQuestionIds(user.getId());
 
         request.setAttribute("username", user.getUsername());
         request.setAttribute("activeExam", activeExam);
         request.setAttribute("questions", questions);
         request.setAttribute("coverageList", coverageList);
         request.setAttribute("coverageStats", coverageStats);
+        request.setAttribute("userAttempts", userAttempts);
+        request.setAttribute("bookmarkedIds", bookmarkedIds);
 
         request.getRequestDispatcher("practice.jsp").forward(request, response);
     }
@@ -69,17 +73,35 @@ public class PracticeServlet extends HttpServlet {
         }
 
         User user = (User) session.getAttribute("user");
+        String action = request.getParameter("action");
         String questionIdStr = request.getParameter("questionId");
         String selectedOption = request.getParameter("selectedOption");
 
-        if (questionIdStr == null || selectedOption == null) {
+        if (questionIdStr == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            out.print("{\"status\":\"ERROR\",\"message\":\"Missing questionId or selectedOption.\"}");
+            out.print("{\"status\":\"ERROR\",\"message\":\"Missing questionId.\"}");
             return;
         }
 
         try {
             int questionId = Integer.parseInt(questionIdStr);
+
+            if ("bookmark".equalsIgnoreCase(action)) {
+                boolean success = new com.examora.dao.PYQAttemptDAO().toggleBookmark(user.getId(), questionId);
+                if (success) {
+                    out.print("{\"status\":\"SUCCESS\",\"message\":\"Bookmark toggled successfully.\"}");
+                } else {
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    out.print("{\"status\":\"ERROR\",\"message\":\"Failed to toggle bookmark.\"}");
+                }
+                return;
+            }
+
+            if (selectedOption == null) {
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                out.print("{\"status\":\"ERROR\",\"message\":\"Missing selectedOption.\"}");
+                return;
+            }
             PYQQuestion question = pyqDAO.getQuestionById(questionId);
 
             if (question == null) {

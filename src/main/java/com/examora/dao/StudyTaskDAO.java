@@ -524,7 +524,14 @@ public class StudyTaskDAO {
 
     public double getPYQYearAttemptsRatio(int userId, int examId) {
         String sql = "SELECT " +
-                     "  (SELECT COUNT(DISTINCT q.year) FROM pyq_attempts a JOIN pyq_questions q ON a.question_id = q.id WHERE a.user_id = ? AND q.exam_id = ?) AS attempted_years, " +
+                     "  (SELECT COUNT(*) FROM (" +
+                     "     SELECT pq.year " +
+                     "     FROM pyq_questions pq " +
+                     "     LEFT JOIN pyq_attempts pa ON pq.id = pa.question_id AND pa.user_id = ? " +
+                     "     WHERE pq.exam_id = ? " +
+                     "     GROUP BY pq.year " +
+                     "     HAVING COUNT(pq.id) = COUNT(DISTINCT pa.question_id)" +
+                     "  ) AS completed) AS completed_years, " +
                      "  (SELECT COUNT(DISTINCT year) FROM pyq_year_coverage WHERE exam_id = ?) AS total_years";
 
         try (Connection conn = DBConnection.getConnection();
@@ -536,7 +543,7 @@ public class StudyTaskDAO {
                 if (rs.next()) {
                     int total = rs.getInt("total_years");
                     if (total == 0) return 0.0;
-                    return ((double) rs.getInt("attempted_years") / total) * 100.0;
+                    return ((double) rs.getInt("completed_years") / total) * 100.0;
                 }
             }
         } catch (SQLException e) {
