@@ -905,7 +905,7 @@
             document.querySelectorAll('.year-tab-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
-            const activeTab = document.getElementById(`tab-${year}`);
+            const activeTab = document.getElementById('tab-' + year);
             if (activeTab) {
                 activeTab.classList.add('active');
             }
@@ -943,7 +943,7 @@
         }
 
         function updateYearSummaryStats() {
-            const questions = document.querySelectorAll(`.q-card[data-year="${currentYear}"]`);
+            const questions = document.querySelectorAll('.q-card[data-year="' + currentYear + '"]');
             const total = yearTotals[currentYear] || 0;
             
             let attempted = 0;
@@ -962,18 +962,18 @@
             const pct = total > 0 ? (attempted / total) * 100 : 0;
             const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
             
-            document.getElementById('year-stats-title').innerText = `Subject Practice: DBMS ${currentYear}`;
-            document.getElementById('year-progress-bar').style.width = `${pct}%`;
-            document.getElementById('year-stats-text').innerText = `${attempted} of ${total} Questions Answered`;
+            document.getElementById('year-stats-title').innerText = 'Subject Practice: DBMS ' + currentYear;
+            document.getElementById('year-progress-bar').style.width = pct + '%';
+            document.getElementById('year-stats-text').innerText = attempted + ' of ' + total + ' Questions Answered';
             
             const accBadge = document.getElementById('year-accuracy-badge');
-            accBadge.innerText = `Accuracy: ${accuracy}% (${correct} Correct)`;
+            accBadge.innerText = 'Accuracy: ' + accuracy + '% (' + correct + ' Correct)';
             
             // Toggle completion session card
             const finishCard = document.getElementById('session-finish-card');
             if (attempted >= total && total > 0) {
                 finishCard.style.display = 'block';
-                document.getElementById('finish-score').innerText = `${correct} / ${total} Correct (${accuracy}% Accuracy)`;
+                document.getElementById('finish-score').innerText = correct + ' / ' + total + ' Correct (' + accuracy + '% Accuracy)';
                 
                 // Find if there were incorrect questions in this year, list topics to study
                 let weakTopicIds = new Set();
@@ -993,7 +993,7 @@
                     weakTopicIds.forEach(topicId => {
                         const name = topicNames[topicId] || "Related Topic";
                         const li = document.createElement('li');
-                        li.innerHTML = `<a href="notes?topicId=${topicId}" class="rec-link">📖 Study Notes for: ${name} &rarr;</a>`;
+                        li.innerHTML = '<a href="notes?topicId=' + topicId + '" class="rec-link">📖 Study Notes for: ' + name + ' &rarr;</a>';
                         recList.appendChild(li);
                     });
                 } else {
@@ -1001,7 +1001,7 @@
                 }
                 
                 // Add complete badge to the active tab button dynamically
-                const tabBtn = document.getElementById(`tab-${currentYear}`);
+                const tabBtn = document.getElementById('tab-' + currentYear);
                 if (tabBtn) {
                     let badge = tabBtn.querySelector('.tab-badge-complete');
                     if (!badge) {
@@ -1052,7 +1052,7 @@
         }
 
         function checkAnswer(qId) {
-            const selected = document.querySelector(`input[name="opt-${qId}"]:checked`);
+            const selected = document.querySelector('input[name="opt-' + qId + '"]:checked');
             if (!selected) {
                 alert("Please select an answer choice first.");
                 return;
@@ -1075,8 +1075,8 @@
             .then(async response => {
                 const data = await response.json();
                 if (response.ok && data.status === 'SUCCESS') {
-                    const explainBox = document.getElementById(`explain-${qId}`);
-                    const resultStatus = document.getElementById(`result-${qId}`);
+                    const explainBox = document.getElementById('explain-' + qId);
+                    const resultStatus = document.getElementById('result-' + qId);
                     const explainText = explainBox.querySelector('p');
                     
                     explainBox.style.display = "block";
@@ -1090,12 +1090,12 @@
                         userAttempts[qId] = { attempted: true, correct: false };
                     }
                     if (data.explanation) {
-                        explainText.innerHTML = `<strong>Explanation:</strong> ${data.explanation}`;
+                        explainText.innerHTML = '<strong>Explanation:</strong> ' + data.explanation;
                     }
                     
                     // Disable options radios and button once submitted
-                    document.querySelectorAll(`input[name="opt-${qId}"]`).forEach(input => input.disabled = true);
-                    const btn = document.querySelector(`button[onclick*="checkAnswer(${qId})"]`);
+                    document.querySelectorAll('input[name="opt-' + qId + '"]').forEach(input => input.disabled = true);
+                    const btn = document.querySelector('button[onclick*="checkAnswer(' + qId + ')"]');
                     if (btn) btn.disabled = true;
                     
                     // Update year stats and progress dynamically
