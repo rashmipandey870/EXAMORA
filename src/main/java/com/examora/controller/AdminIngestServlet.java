@@ -43,13 +43,13 @@ public class AdminIngestServlet extends HttpServlet {
         // Access Control Gate: Admins only
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user") == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
+            response.sendRedirect(request.getContextPath() + "/login?message=Please+log+in+first");
             return;
         }
 
         User user = (User) session.getAttribute("user");
         if (!"admin".equals(user.getUsername()) && !"rashmi_test".equals(user.getUsername())) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied: Administrator role required.");
+            response.sendRedirect(request.getContextPath() + "/login?message=Access+Denied:+Please+log+in+as+an+administrator.");
             return;
         }
 

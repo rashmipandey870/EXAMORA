@@ -318,6 +318,14 @@
                 btn.innerText = 'Sign In';
             });
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const msg = params.get('message');
+            if (msg) {
+                showToast(msg, 'error');
+            }
+        });
     </script>
 </body>
 </html>
