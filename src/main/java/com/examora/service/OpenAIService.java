@@ -10,6 +10,7 @@ import java.nio.charset.StandardCharsets;
 public class OpenAIService implements AIService {
 
     private final String apiKey;
+    private final String anthropicKey;
 
     public OpenAIService() {
         // Read OpenAI API Key from environment variable
@@ -18,10 +19,20 @@ public class OpenAIService implements AIService {
             key = "";
         }
         this.apiKey = key.trim();
+
+        // Read Anthropic API Key from environment variable
+        String aKey = System.getenv("ANTHROPIC_API_KEY");
+        if (aKey == null || aKey.trim().isEmpty()) {
+            aKey = System.getenv("CLAUDE_API_KEY");
+        }
+        if (aKey == null || aKey.trim().isEmpty()) {
+            aKey = "";
+        }
+        this.anthropicKey = aKey.trim();
     }
 
     public boolean isLive() {
-        return !apiKey.isEmpty();
+        return !apiKey.isEmpty() || !anthropicKey.isEmpty();
     }
 
     @Override
@@ -29,6 +40,80 @@ public class OpenAIService implements AIService {
         if (!isLive()) {
             // Fallback to local template if API key is not present
             return generateLocalMockNotes(topicName, subjectName);
+        }
+
+        if (!anthropicKey.isEmpty()) {
+            try {
+                URL url = new URL("https://api.anthropic.com/v1/messages");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("x-api-key", anthropicKey);
+                conn.setRequestProperty("anthropic-version", "2023-06-01");
+                conn.setDoOutput(true);
+                conn.setConnectTimeout(10000);
+                conn.setReadTimeout(20000);
+
+                String promptText = "Generate comprehensive, structured exam study revision notes in markdown format for topic: '" 
+                                  + topicName + "' under subject: '" + subjectName + "'. Include concepts, rules, formulas, and key summaries.";
+                
+                String escapedPrompt = promptText.replace("\\", "\\\\").replace("\"", "\\\"");
+
+                String jsonPayload = "{"
+                        + "\"model\": \"claude-3-opus-20240229\","
+                        + "\"max_tokens\": 2048,"
+                        + "\"messages\": [{"
+                        +   "\"role\": \"user\","
+                        +   "\"content\": \"" + escapedPrompt + "\""
+                        + "}]"
+                        + "}";
+
+                try (OutputStream os = conn.getOutputStream()) {
+                    byte[] input = jsonPayload.getBytes(StandardCharsets.UTF_8);
+                    os.write(input, 0, input.length);
+                }
+
+                int status = conn.getResponseCode();
+                if (status == 200) {
+                    try (BufferedReader br = new BufferedReader(
+                            new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                        StringBuilder response = new StringBuilder();
+                        String responseLine;
+                        while ((responseLine = br.readLine()) != null) {
+                            response.append(responseLine.trim());
+                        }
+                        
+                        String respStr = response.toString();
+                        int textIndex = respStr.indexOf("\"text\":");
+                        if (textIndex != -1) {
+                            int startQuote = respStr.indexOf("\"", textIndex + 6);
+                            if (startQuote != -1) {
+                                StringBuilder sb = new StringBuilder();
+                                boolean escaped = false;
+                                for (int i = startQuote + 1; i < respStr.length(); i++) {
+                                    char c = respStr.charAt(i);
+                                    if (escaped) {
+                                        if (c == 'n') sb.append("\n");
+                                        else if (c == 't') sb.append("\t");
+                                        else sb.append(c);
+                                        escaped = false;
+                                    } else if (c == '\\') {
+                                        escaped = true;
+                                    } else if (c == '\"') {
+                                        break;
+                                    } else {
+                                        sb.append(c);
+                                    }
+                                }
+                                return sb.toString();
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("Error calling Anthropic API for notes: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
 
         try {
@@ -135,6 +220,86 @@ public class OpenAIService implements AIService {
     public String askTutor(String questionContext, String message) {
         if (!isLive()) {
             return generateLocalMockTutorReply(questionContext, message);
+        }
+
+        if (!anthropicKey.isEmpty()) {
+            try {
+                URL url = new URL("https://api.anthropic.com/v1/messages");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                conn.setRequestProperty("x-api-key", anthropicKey);
+                conn.setRequestProperty("anthropic-version", "2023-06-01");
+                conn.setDoOutput(true);
+                conn.setConnectTimeout(10000);
+                conn.setReadTimeout(20000);
+
+                String promptText = "You are an expert tutor for GATE computer science exam. Explain this question context to the student:\n"
+                                  + "=== QUESTION CONTEXT ===\n"
+                                  + questionContext + "\n"
+                                  + "=== END CONTEXT ===\n\n"
+                                  + "Student query: '" + message + "'\n\n"
+                                  + "Provide a concise, helpful, and technically accurate tutoring response.";
+                
+                String escapedPrompt = promptText.replace("\\", "\\\\").replace("\"", "\\\"");
+
+                String jsonPayload = "{"
+                        + "\"model\": \"claude-3-opus-20240229\","
+                        + "\"max_tokens\": 1024,"
+                        + "\"messages\": [{"
+                        +   "\"role\": \"user\","
+                        +   "\"content\": \"" + escapedPrompt + "\""
+                        + "}]"
+                        + "}";
+
+                try (OutputStream os = conn.getOutputStream()) {
+                    byte[] input = jsonPayload.getBytes(StandardCharsets.UTF_8);
+                    os.write(input, 0, input.length);
+                }
+
+                int status = conn.getResponseCode();
+                if (status == 200) {
+                    try (BufferedReader br = new BufferedReader(
+                            new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                        StringBuilder response = new StringBuilder();
+                        String responseLine;
+                        while ((responseLine = br.readLine()) != null) {
+                            response.append(responseLine.trim());
+                        }
+                        
+                        String respStr = response.toString();
+                        int textIndex = respStr.indexOf("\"text\":");
+                        if (textIndex != -1) {
+                            int startQuote = respStr.indexOf("\"", textIndex + 6);
+                            if (startQuote != -1) {
+                                StringBuilder sb = new StringBuilder();
+                                boolean escaped = false;
+                                for (int i = startQuote + 1; i < respStr.length(); i++) {
+                                    char c = respStr.charAt(i);
+                                    if (escaped) {
+                                        if (c == 'n') sb.append("\n");
+                                        else if (c == 't') sb.append("\t");
+                                        else sb.append(c);
+                                        escaped = false;
+                                    } else if (c == '\\') {
+                                        escaped = true;
+                                    } else if (c == '\"') {
+                                        break;
+                                    } else {
+                                        sb.append(c);
+                                    }
+                                }
+                                return sb.toString();
+                            }
+                        }
+                    }
+                } else {
+                    System.err.println("Anthropic API call failed with HTTP status: " + status);
+                }
+            } catch (Exception e) {
+                System.err.println("Error calling Anthropic Claude API: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
 
         try {
