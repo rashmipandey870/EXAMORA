@@ -130,4 +130,113 @@ public class OpenAIService implements AIService {
         sb.append("> **Note:** Historical exams consistently focus on edge cases. Review previous years' questions carefully.");
         return sb.toString();
     }
+
+    @Override
+    public String askTutor(String questionContext, String message) {
+        if (!isLive()) {
+            return generateLocalMockTutorReply(questionContext, message);
+        }
+
+        try {
+            URL url = new URL("https://api.openai.com/v1/chat/completions");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Authorization", "Bearer " + apiKey);
+            conn.setDoOutput(true);
+            conn.setConnectTimeout(8000);
+            conn.setReadTimeout(15000);
+
+            // Construct prompt instructions
+            String promptText = "You are an expert tutor for GATE computer science exam. Explain this question context to the student:\n"
+                              + "=== QUESTION CONTEXT ===\n"
+                              + questionContext + "\n"
+                              + "=== END CONTEXT ===\n\n"
+                              + "Student query: '" + message + "'\n\n"
+                              + "Provide a concise, helpful, and technically accurate tutoring response.";
+            
+            String escapedPrompt = promptText.replace("\\", "\\\\").replace("\"", "\\\"");
+
+            String jsonPayload = "{"
+                    + "\"model\": \"gpt-4o-mini\","
+                    + "\"messages\": [{"
+                    +   "\"role\": \"user\","
+                    +   "\"content\": \"" + escapedPrompt + "\""
+                    + "}]"
+                    + "}";
+
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonPayload.getBytes(StandardCharsets.UTF_8);
+                os.write(input, 0, input.length);
+            }
+
+            int status = conn.getResponseCode();
+            if (status == 200) {
+                try (BufferedReader br = new BufferedReader(
+                        new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                    StringBuilder response = new StringBuilder();
+                    String responseLine;
+                    while ((responseLine = br.readLine()) != null) {
+                        response.append(responseLine.trim());
+                    }
+                    
+                    String respStr = response.toString();
+                    int contentIndex = respStr.indexOf("\"content\":");
+                    if (contentIndex != -1) {
+                        int startQuote = respStr.indexOf("\"", contentIndex + 10);
+                        if (startQuote != -1) {
+                            StringBuilder sb = new StringBuilder();
+                            boolean escaped = false;
+                            for (int i = startQuote + 1; i < respStr.length(); i++) {
+                                char c = respStr.charAt(i);
+                                if (escaped) {
+                                    if (c == 'n') sb.append("\n");
+                                    else if (c == 't') sb.append("\t");
+                                    else sb.append(c);
+                                    escaped = false;
+                                } else if (c == '\\') {
+                                    escaped = true;
+                                } else if (c == '\"') {
+                                    break;
+                                } else {
+                                    sb.append(c);
+                                }
+                            }
+                            return sb.toString();
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error calling OpenAI completions API in askTutor: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return generateLocalMockTutorReply(questionContext, message);
+    }
+
+    private String generateLocalMockTutorReply(String context, String query) {
+        // Extract basic features to make fallback response contextually helpful
+        String questionSnippet = "";
+        int qStart = context.indexOf("Question Text:");
+        if (qStart != -1) {
+            int qEnd = context.indexOf("Options:", qStart);
+            if (qEnd == -1) qEnd = context.length();
+            questionSnippet = context.substring(qStart + 14, Math.min(qStart + 250, qEnd)).trim();
+        }
+
+        String explanation = "No explanation available.";
+        int eStart = context.indexOf("Explanation:");
+        if (eStart != -1) {
+            explanation = context.substring(eStart + 12).trim();
+        }
+
+        return "🤖 **EXAMORA AI Tutor (Offline Fallback)**\n\n"
+             + "You asked: *" + query + "*\n\n"
+             + "Regarding this question: \n"
+             + "> " + questionSnippet + "...\n\n"
+             + "Here is the key breakdown to help you solve it:\n"
+             + "- **Solution Guide**: " + explanation + "\n\n"
+             + "*Please note: To enable interactive, custom tutor chats, configure a live `OPENAI_API_KEY` env variable.*";
+    }
 }

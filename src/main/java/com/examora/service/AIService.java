@@ -8,4 +8,12 @@ public interface AIService {
      * @return Markdown-formatted revision notes
      */
     String generateNotes(String topicName, String subjectName);
+
+    /**
+     * Contextual tutoring helper for practice solver questions.
+     * @param questionContext details about the question and solution
+     * @param message student query text
+     * @return Markdown tutor reply
+     */
+    String askTutor(String questionContext, String message);
 }

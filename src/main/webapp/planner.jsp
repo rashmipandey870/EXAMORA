@@ -548,6 +548,232 @@
 
         .toast.success { border-left: 4px solid var(--success-color); }
         .toast.error { border-left: 4px solid var(--error-color); }
+
+        /* --- WIZARD AND SCHEDULE TABLE STYLES --- */
+        .wizard-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+            padding: 0 10px;
+        }
+        .wizard-progress::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255,255,255,0.05);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+        .wizard-step-tab {
+            background: var(--sidebar-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.95rem;
+            z-index: 2;
+            transition: all 0.3s;
+        }
+        .wizard-step-tab.active {
+            border-color: var(--accent-primary);
+            background: var(--accent-primary);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+        }
+        .wizard-step-tab.completed {
+            border-color: var(--success-color);
+            background: var(--success-color);
+            color: #fff;
+        }
+        .wizard-panel {
+            display: none;
+        }
+        .wizard-panel.active {
+            display: block;
+        }
+        .wizard-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .btn-wizard {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-wizard-prev {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+        .btn-wizard-prev:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .btn-wizard-next {
+            background: var(--accent-primary);
+            color: #fff;
+        }
+        .btn-wizard-next:hover {
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .btn-preset {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-preset:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            background: rgba(99, 102, 241, 0.05);
+            color: #fff;
+        }
+
+        .badge-recommended {
+            background: rgba(245, 158, 11, 0.12);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .badge-high-yield {
+            background: rgba(239, 68, 68, 0.12);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+            background: rgba(13, 18, 36, 0.4);
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .select-filter {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--card-border);
+            padding: 8px 14px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.85rem;
+            outline: none;
+            font-family: inherit;
+        }
+        .select-filter:focus {
+            border-color: var(--accent-primary);
+        }
+        .btn-export {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            color: #34d399;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .btn-export:hover {
+            background: var(--success-color);
+            color: #fff;
+        }
+        .schedule-table-container {
+            background: rgba(13, 18, 36, 0.5);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        .schedule-table th {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--card-border);
+        }
+        .schedule-table td {
+            padding: 16px 20px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            color: var(--text-primary);
+        }
+        .schedule-table tr:hover td {
+            background: rgba(255,255,255,0.015);
+        }
+        .schedule-table tr.filtered-out {
+            display: none !important;
+        }
+        .phase-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .dot-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .dot-indicator.learn { background: var(--accent-primary); }
+        .dot-indicator.practice { background: var(--success-color); }
+        .dot-indicator.revision { background: var(--info-color); }
     </style>
 </head>
 <body>
@@ -612,89 +838,61 @@
             </div>
 
             <div class="glass-card">
+                <!-- Wizard Navigation Indicators -->
+                <div class="wizard-progress">
+                    <div class="wizard-step-tab active" id="step-tab-1">1</div>
+                    <div class="wizard-step-tab" id="step-tab-2">2</div>
+                    <div class="wizard-step-tab" id="step-tab-3">3</div>
+                </div>
+
                 <form id="wizard-form" onsubmit="generateStrategy(event)">
                     <input type="hidden" name="examId" value="<%= activeExam.getId() %>">
                     <input type="hidden" name="endDate" value="<%= activeExam.getExamDate() %>">
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Plan Start Date</label>
-                            <input type="date" name="startDate" id="startDate" required>
+                    <!-- Step 1: Constraints & Availability -->
+                    <div class="wizard-panel active" id="step-panel-1">
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 20px;">Step 1: Timeframe & Capacity</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Plan Start Date</label>
+                                <input type="date" name="startDate" id="startDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Exam Date (Deadline)</label>
+                                <input type="date" value="<%= activeExam.getExamDate() %>" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>Daily Study Time (Hours)</label>
+                                <input type="number" name="dailyHours" min="1" max="24" value="3" required>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Exam Date (Deadline)</label>
-                            <input type="date" value="<%= activeExam.getExamDate() %>" disabled>
+
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>Preferred Study Days</label>
+                            <div class="checkbox-group">
+                                <% 
+                                    String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+                                    for (String d : days) {
+                                %>
+                                        <label class="checkbox-tile checked" id="label-<%= d %>">
+                                            <input type="checkbox" name="preferredDays" value="<%= d %>" checked onchange="toggleTile('<%= d %>')">
+                                            <%= d %>
+                                        </label>
+                                <% } %>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Daily Study Time (Hours)</label>
-                            <input type="number" name="dailyHours" min="1" max="24" value="3" required>
+                        
+                        <div class="wizard-buttons">
+                            <div></div>
+                            <button type="button" class="btn-wizard btn-wizard-next" onclick="goToStep(2)">Next: Select Topics &rarr;</button>
                         </div>
                     </div>
 
-                    <div class="form-group" style="margin-bottom: 30px;">
-                        <label>Preferred Study Days</label>
-                        <div class="checkbox-group">
-                            <% 
-                                String[] days = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-                                for (String d : days) {
-                            %>
-                                    <label class="checkbox-tile checked" id="label-<%= d %>">
-                                        <input type="checkbox" name="preferredDays" value="<%= d %>" checked onchange="toggleTile('<%= d %>')">
-                                        <%= d %>
-                                    </label>
-                            <% } %>
-                        </div>
-                    </div>
-
-                    <!-- Study Phase Allocation Configuration -->
-                    <div class="form-group" style="margin-bottom: 30px;">
-                        <label>Study Phase Allocation (Must sum to 100%)</label>
-                        <div class="form-row" style="display: flex; gap: 20px;">
-                            <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                                <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Learn Phase %</label>
-                                <input type="number" id="learnPct" name="learnPct" min="0" max="100" value="50" oninput="validateSplits()" required>
-                            </div>
-                            <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                                <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Practice Phase %</label>
-                                <input type="number" id="practicePct" name="practicePct" min="0" max="100" value="30" oninput="validateSplits()" required>
-                            </div>
-                            <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                                <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Revision Phase %</label>
-                                <input type="number" id="revisionPct" name="revisionPct" min="0" max="100" value="20" oninput="validateSplits()" required>
-                            </div>
-                        </div>
-                        <div id="splits-error" style="color: #ef4444; font-size: 0.85rem; margin-top: 8px; display: none; font-weight: 600;">
-                            Percentages must sum to exactly 100% (currently: <span id="splits-sum-lbl">100</span>%).
-                        </div>
-                    </div>
-
-                    <!-- Milestones Configuration -->
-                    <div class="form-group" style="margin-bottom: 30px;">
-                        <label>Milestones Configuration & Deadlines (Optional)</label>
-                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">
-                            Specify intermediate milestone targets. Leave empty for dynamic auto-calculations.
-                        </p>
-                        <div class="form-row" style="display: flex; gap: 20px;">
-                            <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                                <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Syllabus Finish Target</label>
-                                <input type="date" id="targetSyllabusDate" name="targetSyllabusDate" style="width: 100%; padding: 12px 16px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff;">
-                            </div>
-                            <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                                <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">PYQ Finish Target</label>
-                                <input type="date" id="targetPyqDate" name="targetPyqDate" style="width: 100%; padding: 12px 16px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff;">
-                            </div>
-                            <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                                <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Revision Buffer (Days)</label>
-                                <input type="number" id="revisionBufferDays" name="revisionBufferDays" min="1" max="60" value="14">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Syllabus Scope Selection Checkboxes -->
-                    <div class="form-group">
-                        <label>Syllabus Target Scope</label>
-                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">
-                            Uncheck subjects or modules you want to exclude from this specific schedule generation.
+                    <!-- Step 2: Syllabus Scope & Recommendations -->
+                    <div class="wizard-panel" id="step-panel-2">
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 8px;">Step 2: Focus Subjects & Recommended Topics</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 20px;">
+                            We have automatically recommended high-yield subjects based on exam trends and priority metrics. Feel free to customize.
                         </p>
 
                         <% 
@@ -704,19 +902,31 @@
                                     <div class="syllabus-selector" style="margin-bottom: 20px;">
                                         <div class="subject-selection-header">
                                             <span><%= subject.getName() %></span>
-                                            <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal;">
-                                                <a href="#" onclick="toggleSubjectChecks(<%= subject.getId() %>, true); return false;" style="color: var(--accent-primary); text-decoration: none; margin-right: 12px;">Check All</a>
-                                                <a href="#" onclick="toggleSubjectChecks(<%= subject.getId() %>, false); return false;" style="color: #f87171; text-decoration: none;">Clear All</a>
+                                            <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: normal; display: flex; gap: 14px;">
+                                                <a href="#" onclick="toggleSubjectChecks(<%= subject.getId() %>, true); return false;" style="color: var(--accent-primary); text-decoration: none;">Select All</a>
+                                                <a href="#" onclick="selectHighYieldOnly(<%= subject.getId() %>); return false;" style="color: #fbbf24; text-decoration: none;">High-Yield Only</a>
+                                                <a href="#" onclick="toggleSubjectChecks(<%= subject.getId() %>, false); return false;" style="color: #f87171; text-decoration: none;">Clear</a>
                                             </span>
                                         </div>
                                         <div class="topic-selection-list">
                                             <% 
                                                 for (Topic topic : subject.getTopics()) {
+                                                    boolean isRecommended = "VERY HIGH".equalsIgnoreCase(topic.getPriority()) 
+                                                                        || "HIGH".equalsIgnoreCase(topic.getPriority()) 
+                                                                        || "HIGH".equalsIgnoreCase(topic.getHistoricalFrequency());
                                             %>
                                                     <label class="topic-selection-row">
                                                         <input type="checkbox" class="subj-check-<%= subject.getId() %>" name="selectedTopics" value="<%= topic.getId() %>" checked>
-                                                        <div class="topic-sel-label">
-                                                            <span><%= topic.getName() %></span>
+                                                        <div class="topic-sel-label" style="flex-grow: 1;">
+                                                            <span style="display: inline-flex; align-items: center; gap: 8px;">
+                                                                <%= topic.getName() %>
+                                                                <% if (isRecommended) { %>
+                                                                    <span class="badge-recommended">⭐ Recommended</span>
+                                                                <% } %>
+                                                                <% if ("VERY HIGH".equalsIgnoreCase(topic.getPriority())) { %>
+                                                                    <span class="badge-high-yield">Very High Yield</span>
+                                                                <% } %>
+                                                            </span>
                                                             <span class="topic-sel-desc"><%= topic.getDescription() %></span>
                                                         </div>
                                                     </label>
@@ -727,9 +937,74 @@
                                 }
                             } 
                         %>
+                        
+                        <div class="wizard-buttons">
+                            <button type="button" class="btn-wizard btn-wizard-prev" onclick="goToStep(1)">&larr; Back</button>
+                            <button type="button" class="btn-wizard btn-wizard-next" onclick="goToStep(3)">Next: Strategy Preset &rarr;</button>
+                        </div>
                     </div>
 
-                    <button type="submit" class="btn-action">Generate Study Strategy</button>
+                    <!-- Step 3: Allocation Configuration & Milestones -->
+                    <div class="wizard-panel" id="step-panel-3">
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 20px;">Step 3: Strategy Allocation Presets</h3>
+                        
+                        <div class="form-group" style="margin-bottom: 24px;">
+                            <label>Select Allocation Preset</label>
+                            <div class="preset-buttons">
+                                <button type="button" class="btn-preset" onclick="applyPreset(50, 30, 20)">Balanced Study (50% Learn / 30% Practice / 20% Revision)</button>
+                                <button type="button" class="btn-preset" onclick="applyPreset(40, 40, 20)">Practice Heavy (40% Learn / 40% Practice / 20% Revision)</button>
+                                <button type="button" class="btn-preset" onclick="applyPreset(30, 30, 40)">Revision Intensive (30% Learn / 30% Practice / 40% Revision)</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 30px;">
+                            <label>Study Phase Allocation (Must sum to 100%)</label>
+                            <div class="form-row" style="display: flex; gap: 20px;">
+                                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                                    <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Learn Phase %</label>
+                                    <input type="number" id="learnPct" name="learnPct" min="0" max="100" value="50" oninput="validateSplits()" required>
+                                </div>
+                                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                                    <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Practice Phase %</label>
+                                    <input type="number" id="practicePct" name="practicePct" min="0" max="100" value="30" oninput="validateSplits()" required>
+                                </div>
+                                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                                    <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Revision Phase %</label>
+                                    <input type="number" id="revisionPct" name="revisionPct" min="0" max="100" value="20" oninput="validateSplits()" required>
+                                </div>
+                            </div>
+                            <div id="splits-error" style="color: #ef4444; font-size: 0.85rem; margin-top: 8px; display: none; font-weight: 600;">
+                                Percentages must sum to exactly 100% (currently: <span id="splits-sum-lbl">100</span>%).
+                            </div>
+                        </div>
+
+                        <!-- Milestones Configuration -->
+                        <div class="form-group" style="margin-bottom: 30px;">
+                            <label>Milestones Configuration & Deadlines (Optional)</label>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 12px;">
+                                Specify intermediate milestone targets or let the planner calculate them automatically.
+                            </p>
+                            <div class="form-row" style="display: flex; gap: 20px;">
+                                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                                    <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Syllabus Finish Target</label>
+                                    <input type="date" id="targetSyllabusDate" name="targetSyllabusDate" style="width: 100%; padding: 12px 16px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff;">
+                                </div>
+                                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                                    <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">PYQ Finish Target</label>
+                                    <input type="date" id="targetPyqDate" name="targetPyqDate" style="width: 100%; padding: 12px 16px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff;">
+                                </div>
+                                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                                    <label style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px;">Revision Buffer (Days)</label>
+                                    <input type="number" id="revisionBufferDays" name="revisionBufferDays" min="1" max="60" value="14">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="wizard-buttons">
+                            <button type="button" class="btn-wizard btn-wizard-prev" onclick="goToStep(2)">&larr; Back</button>
+                            <button type="submit" class="btn-action" style="margin-top: 0;">Generate Study Strategy</button>
+                        </div>
+                    </div>
                 </form>
             </div>
 
@@ -768,11 +1043,43 @@
                 </div>
             </div>
 
+            <!-- Premium Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label style="margin-right: 6px;">Filter Subject</label>
+                    <select id="filter-subject" class="select-filter" onchange="applyFilters()">
+                        <option value="ALL">All Subjects</option>
+                        <% 
+                            // Extract distinct subjects
+                            List<String> subjects = new ArrayList<>();
+                            if (tasksList != null) {
+                                for (StudyTask t : tasksList) {
+                                    if (!subjects.contains(t.getSubjectName())) {
+                                        subjects.add(t.getSubjectName());
+                                    }
+                                }
+                            }
+                            for (String subj : subjects) {
+                        %>
+                                <option value="<%= subj %>"><%= subj %></option>
+                        <% } %>
+                    </select>
+
+                    <label style="margin-left: 16px; margin-right: 6px;">Filter Phase</label>
+                    <select id="filter-phase" class="select-filter" onchange="applyFilters()">
+                        <option value="ALL">All Phases</option>
+                        <option value="LEARN">Learning Block</option>
+                        <option value="PRACTICE">Practice & PYQs</option>
+                        <option value="REVISION">Revision Cycle</option>
+                    </select>
+                </div>
+                <button class="btn-export" onclick="exportToCSV()">📤 Export Schedule to CSV</button>
+            </div>
+
             <!-- Chronological tasks list grouped by week -->
             <div class="timeline-container">
                 <% 
                     if (tasksList != null && !tasksList.isEmpty()) {
-                        // Map tasks by week (7 days blocks relative to plan start date)
                         LocalDate planStart = activePlan.getStartDate();
                         Map<Integer, List<StudyTask>> weeklyTasks = new LinkedHashMap<>();
 
@@ -801,50 +1108,67 @@
                                     </span>
                                 </div>
                                 <div class="week-body" id="week-body-<%= week %>">
-                                    <% 
-                                        for (StudyTask task : weekTasks) {
-                                            String cardClass = "learning";
-                                            String typeLabel = "Learning Block";
-                                            String typeBadge = "type-learn";
-                                            
-                                            String mode = task.getTaskMode();
-                                            if ("PRACTICE".equalsIgnoreCase(mode) || task.isMockTest()) {
-                                                cardClass = "mock-test";
-                                                typeLabel = "Practice & PYQs";
-                                                typeBadge = "type-mock";
-                                            } else if ("REVISION".equalsIgnoreCase(mode) || task.isRevision()) {
-                                                cardClass = "revision";
-                                                typeLabel = "Revision Cycle";
-                                                typeBadge = "type-rev";
-                                            }
-                                    %>
-                                            <div class="task-card <%= cardClass %>">
-                                                <div class="task-details">
-                                                    <span class="task-date">
-                                                        <%= task.getScheduledDate().format(dateFormatter) %>
-                                                    </span>
-                                                    <span class="task-title">
-                                                        <%= task.getTopicName() %>
-                                                    </span>
-                                                    <span class="task-desc">
-                                                        Subject: <strong><%= task.getSubjectName() %></strong> &bull; 
-                                                        Type: <%= typeLabel %>
-                                                        <% if (task.getAllocationExplanation() != null) { %>
-                                                            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 6px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.05); font-style: italic; line-height: 1.3;">
-                                                                ℹ️ <%= task.getAllocationExplanation() %>
-                                                            </div>
-                                                        <% } %>
-                                                    </span>
-                                                </div>
-                                                <div class="task-stats">
-                                                    <span class="badge <%= typeBadge %>"><%= typeLabel %></span>
-                                                    <span class="badge todo"><%= task.getScheduledHours() %>h Allocation</span>
-                                                    <span class="badge status-todo"><%= task.getStatus() %></span>
-                                                </div>
-                                            </div>
-                                    <% 
-                                        } 
-                                    %>
+                                    <div class="schedule-table-container">
+                                        <table class="schedule-table">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 15%;">Date</th>
+                                                    <th style="width: 15%;">Subject</th>
+                                                    <th style="width: 35%;">Topic & priority details</th>
+                                                    <th style="width: 15%;">Phase</th>
+                                                    <th style="width: 10%;">Allocation</th>
+                                                    <th style="width: 10%;">Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% 
+                                                    for (StudyTask task : weekTasks) {
+                                                        String phaseClass = "learn";
+                                                        String phaseLabel = "Learning Block";
+                                                        
+                                                        String mode = task.getTaskMode();
+                                                        if ("PRACTICE".equalsIgnoreCase(mode) || task.isMockTest()) {
+                                                            phaseClass = "practice";
+                                                            phaseLabel = "Practice & PYQs";
+                                                        } else if ("REVISION".equalsIgnoreCase(mode) || task.isRevision()) {
+                                                            phaseClass = "revision";
+                                                            phaseLabel = "Revision Cycle";
+                                                        }
+                                                %>
+                                                        <tr class="task-row" data-subject="<%= task.getSubjectName() %>" data-phase="<%= task.getTaskMode() %>">
+                                                            <td style="font-weight: 600; color: var(--accent-primary);">
+                                                                <%= task.getScheduledDate().format(dateFormatter) %>
+                                                            </td>
+                                                            <td style="font-weight: 700; color: #fff;"><%= task.getSubjectName() %></td>
+                                                            <td>
+                                                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                                                    <span style="font-weight: 600; color: #fff;"><%= task.getTopicName() %></span>
+                                                                    <% if (task.getAllocationExplanation() != null) { %>
+                                                                        <span style="font-size: 0.72rem; color: var(--text-secondary); line-height: 1.3;">
+                                                                            <%= task.getAllocationExplanation() %>
+                                                                        </span>
+                                                                    <% } %>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <span class="phase-indicator">
+                                                                    <span class="dot-indicator <%= phaseClass %>"></span>
+                                                                    <%= phaseLabel %>
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge type-<%= phaseClass %>"><%= task.getScheduledHours() %>h</span>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge todo"><%= task.getStatus() %></span>
+                                                            </td>
+                                                        </tr>
+                                                <% 
+                                                    } 
+                                                %>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                 <% 
@@ -1004,7 +1328,7 @@
             
             const errorDiv = document.getElementById('splits-error');
             const sumLbl = document.getElementById('splits-sum-lbl');
-            const submitBtn = document.querySelector('button[type=\"submit\"]') || document.querySelector('.btn-submit') || document.querySelector('#wizard-form button');
+            const submitBtn = document.querySelector('button[type="submit"]') || document.querySelector('.btn-submit') || document.querySelector('#wizard-form button');
             
             sumLbl.innerText = sum;
             if (sum !== 100) {
@@ -1014,6 +1338,149 @@
                 errorDiv.style.display = 'none';
                 if (submitBtn) submitBtn.disabled = false;
             }
+        }
+
+        // --- WIZARD STEP NAVIGATION ---
+        let currentStep = 1;
+
+        function goToStep(step) {
+            // Validation prechecks
+            if (step === 2 && currentStep === 1) {
+                // Ensure date fields are valid
+                const start = document.getElementById('startDate').value;
+                if (!start) {
+                    showToast("Please select a valid start date.", "error");
+                    return;
+                }
+            }
+
+            if (step === 3 && currentStep === 2) {
+                // Ensure at least one topic is checked
+                const checked = document.querySelectorAll('input[name="selectedTopics"]:checked');
+                if (checked.length === 0) {
+                    showToast("Please select at least one syllabus topic to study.", "error");
+                    return;
+                }
+            }
+
+            currentStep = step;
+
+            // Toggle indicators
+            for (let i = 1; i <= 3; i++) {
+                const tab = document.getElementById(`step-tab-${i}`);
+                if (tab) {
+                    tab.classList.toggle('active', i === step);
+                    tab.classList.toggle('completed', i < step);
+                }
+            }
+
+            // Toggle panels
+            document.querySelectorAll('.wizard-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            const activePanel = document.getElementById(`step-panel-${step}`);
+            if (activePanel) {
+                activePanel.classList.add('active');
+            }
+        }
+
+        function applyPreset(learn, practice, revision) {
+            document.getElementById('learnPct').value = learn;
+            document.getElementById('practicePct').value = practice;
+            document.getElementById('revisionPct').value = revision;
+            validateSplits();
+            showToast(`Preset applied: ${learn}% Learn / ${practice}% Practice / ${revision}% Revision`, "success");
+        }
+
+        function selectHighYieldOnly(subjectId) {
+            // Uncheck all of this subject first
+            const checkboxes = document.querySelectorAll(`.subj-check-${subjectId}`);
+            checkboxes.forEach(cb => {
+                const row = cb.closest('.topic-selection-row');
+                const isRecommended = row.querySelector('.badge-recommended') !== null || row.querySelector('.badge-high-yield') !== null;
+                cb.checked = isRecommended;
+            });
+            showToast("Recommended High-Yield topics selected.", "success");
+        }
+
+        // --- PREVENTING ACCIDENTALLY TOGGLING ROOT ACCORDIONS ---
+        function applyFilters() {
+            const subj = document.getElementById('filter-subject').value;
+            const phase = document.getElementById('filter-phase').value;
+
+            document.querySelectorAll('.task-row').forEach(row => {
+                const rowSubj = row.getAttribute('data-subject');
+                const rowPhase = row.getAttribute('data-phase');
+
+                const matchesSubj = (subj === 'ALL' || rowSubj === subj);
+                const matchesPhase = (phase === 'ALL' || rowPhase === phase);
+
+                if (matchesSubj && matchesPhase) {
+                    row.classList.remove('filtered-out');
+                } else {
+                    row.classList.add('filtered-out');
+                }
+            });
+
+            // Adjust week summary counts
+            document.querySelectorAll('.week-block').forEach(block => {
+                const visibleRows = block.querySelectorAll('.task-row:not(.filtered-out)');
+                const headerMeta = block.querySelector('.week-meta');
+                if (headerMeta) {
+                    const text = headerMeta.innerText;
+                    // Just update visible count dynamically
+                    const baseStr = text.substring(0, text.indexOf('('));
+                    headerMeta.innerText = `${baseStr}(${visibleRows.length} Visible)`;
+                }
+                
+                // Hide week block entirely if no visible rows
+                if (visibleRows.length === 0) {
+                    block.style.display = 'none';
+                } else {
+                    block.style.display = 'block';
+                }
+            });
+        }
+
+        // --- EXPORT TO CSV EXCEL ---
+        function exportToCSV() {
+            let csv = [];
+            // Columns headers
+            csv.push("Date,Subject,Topic,Phase,Allocation Hours,Status");
+
+            const rows = document.querySelectorAll('.task-row:not(.filtered-out)');
+            if (rows.length === 0) {
+                showToast("No visible tasks to export. Adjust filters first.", "error");
+                return;
+            }
+
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('td');
+                const date = cols[0].innerText.replace(/,/g, "").trim();
+                const subj = cols[1].innerText.replace(/,/g, "").trim();
+                
+                // Topic contains description/details, extract only title
+                const topicTitle = cols[2].querySelector('span').innerText.replace(/,/g, "").trim();
+                
+                const phase = cols[3].innerText.replace(/,/g, "").trim();
+                const hours = cols[4].innerText.replace(/,/g, "").trim();
+                const status = cols[5].innerText.replace(/,/g, "").trim();
+
+                csv.push(`"${date}","${subj}","${topicTitle}","${phase}","${hours}","${status}"`);
+            });
+
+            const csvString = csv.join("\n");
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", `EXAMORA_Study_Schedule_${currentYear}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Study schedule exported to CSV successfully!", "success");
         }
     </script>
 </body>
