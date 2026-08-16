@@ -597,8 +597,8 @@
         .wizard-panel {
             display: none;
         }
-        .wizard-panel.active {
-            display: block;
+        .wizard-panel.active-panel {
+            display: block !important;
         }
         .wizard-buttons {
             display: flex;
@@ -878,7 +878,7 @@
                     <input type="hidden" name="endDate" value="<%= activeExam.getExamDate() %>">
 
                     <!-- Step 1: Constraints & Availability -->
-                    <div class="wizard-panel active" id="step-panel-1">
+                    <div class="wizard-panel active-panel" id="step-panel-1">
                         <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 20px;">Step 1: Timeframe & Capacity</h3>
                         <div class="form-row">
                             <div class="form-group">
@@ -1422,11 +1422,11 @@
 
             // Toggle panels
             document.querySelectorAll('.wizard-panel').forEach(panel => {
-                panel.classList.remove('active');
+                panel.classList.remove('active-panel');
             });
             const activePanel = document.getElementById(`step-panel-${step}`);
             if (activePanel) {
-                activePanel.classList.add('active');
+                activePanel.classList.add('active-panel');
             }
         }
 
