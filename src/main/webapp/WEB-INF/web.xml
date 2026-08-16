@@ -15,9 +15,14 @@
         </cookie-config>
     </session-config>
 
-    <!-- Configure Welcome File List -->
-    <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
-    </welcome-file-list>
+    <!-- Explicitly declare TutorChatServlet mapping -->
+    <servlet>
+        <servlet-name>TutorChatServlet</servlet-name>
+        <servlet-class>com.examora.controller.TutorChatServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TutorChatServlet</servlet-name>
+        <url-pattern>/tutor-chat</url-pattern>
+    </servlet-mapping>
 
 </web-app>
