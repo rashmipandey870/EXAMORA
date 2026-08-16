@@ -41,6 +41,7 @@ public class SyllabusService {
             
             // Fetch all topics in this subject (both unit-mapped and unmapped)
             List<Topic> allSubjectTopics = topicDAO.getTopicsBySubjectId(subject.getId(), examId);
+            subject.setTopics(allSubjectTopics);
             
             if (units.isEmpty()) {
                 // If subject has no units, create a single virtual unit to hold all topics

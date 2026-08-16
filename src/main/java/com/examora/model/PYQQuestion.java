@@ -74,13 +74,28 @@ public class PYQQuestion {
     }
 
     public java.util.Map<String, String> getParsedOptions() {
+        if (this.optionsJson == null || this.optionsJson.trim().isEmpty()) {
+            return java.util.Collections.emptyMap();
+        }
         try {
             com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
-            return mapper.readValue(this.optionsJson,
-                new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, String>>() {});
+            String trimmed = this.optionsJson.trim();
+            if (trimmed.startsWith("[")) {
+                // Parse as List of Strings
+                java.util.List<String> list = mapper.readValue(trimmed,
+                    new com.fasterxml.jackson.core.type.TypeReference<java.util.List<String>>() {});
+                java.util.Map<String, String> map = new java.util.LinkedHashMap<>();
+                String[] keys = {"A", "B", "C", "D", "E", "F"};
+                for (int i = 0; i < list.size() && i < keys.length; i++) {
+                    map.put(keys[i], list.get(i));
+                }
+                return map;
+            } else {
+                // Parse as Map
+                return mapper.readValue(trimmed,
+                    new com.fasterxml.jackson.core.type.TypeReference<java.util.LinkedHashMap<String, String>>() {});
+            }
         } catch (Exception e) {
-            // This fallback should never trigger on real post-migration data.
-            // If it does, log loudly server-side — do not let it silently mask a real data problem.
             System.err.println("CRITICAL: Failed to parse optionsJson for question ID " + this.getId()
                 + " — options_json value: " + this.optionsJson + " — error: " + e.getMessage());
             return java.util.Collections.emptyMap();

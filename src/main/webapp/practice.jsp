@@ -1606,13 +1606,10 @@
             examCurrentIndex = 0;
             
             document.querySelectorAll('.q-card').forEach(card => {
-                const qId = card.getAttribute('data-qid');
-                if (!userAttempts[qId] || !userAttempts[qId].attempted) {
-                    card.querySelectorAll('input[type="radio"]').forEach(radio => {
-                        radio.checked = false;
-                        radio.disabled = false;
-                    });
-                }
+                card.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.checked = false;
+                    radio.disabled = false;
+                });
             });
         }
 
