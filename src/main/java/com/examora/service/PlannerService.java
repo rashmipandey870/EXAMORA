@@ -131,27 +131,17 @@ public class PlannerService {
             return false; // No preferred study days available in the range
         }
 
-        // 5. Calculate total available hours and targets for splits
-        double totalAvailableHours = validStudyDates.size() * dailyHours;
-        double targetLearnHours = totalAvailableHours * (learnPct / 100.0);
-        double targetPracticeHours = totalAvailableHours * (practicePct / 100.0);
-        double targetRevisionHours = totalAvailableHours - targetLearnHours - targetPracticeHours;
-        if (targetRevisionHours < 0.0) targetRevisionHours = 0.0;
-
-        // 6. Calculate priority score for each selected topic and sort descending
+        // 5. Calculate priority score for each selected topic and sort descending
         int totalDaysRemaining = (int) ChronoUnit.DAYS.between(startDate, endDate);
         if (totalDaysRemaining <= 0) totalDaysRemaining = 1;
 
         final int daysRemaining = totalDaysRemaining;
-        double sumPriorityScores = 0.0;
         Map<Integer, Double> priorityScores = new HashMap<>();
         for (Topic topic : selectedTopics) {
             double score = priorityService.calculatePriorityScore(topic, 3, daysRemaining, userId);
             if (score <= 0.0) score = 1.0;
             priorityScores.put(topic.getId(), score);
-            sumPriorityScores += score;
         }
-        if (sumPriorityScores == 0.0) sumPriorityScores = 1.0;
 
         selectedTopics.sort((t1, t2) -> {
             double p1 = priorityScores.get(t1.getId());
@@ -159,36 +149,42 @@ public class PlannerService {
             return Double.compare(p2, p1); // Descending order
         });
 
-        // Distribute target split hours to topics proportionally by priority score
+        // Set target study hours based on actual topic estimated hours
         Map<Integer, Double> learnHoursMap = new HashMap<>();
         Map<Integer, Double> practiceHoursMap = new HashMap<>();
         Map<Integer, Double> revisionHoursMap = new HashMap<>();
         Map<Integer, LocalDate> topicCompletionDates = new HashMap<>();
 
         for (Topic topic : selectedTopics) {
-            double score = priorityScores.get(topic.getId());
-            double ratio = score / sumPriorityScores;
-            double lHrs = targetLearnHours * ratio;
-            double pHrs = targetPracticeHours * ratio;
-            double rHrs = targetRevisionHours * ratio;
+            double estHrs = topic.getEstimatedHours() > 0 ? topic.getEstimatedHours() : 3.0;
             
-            learnHoursMap.put(topic.getId(), lHrs);
+            // Allocate exact estimated hours for learning
+            learnHoursMap.put(topic.getId(), estHrs);
+            
+            // Practice and revision are proportional to learn hours based on user configuration split ratios
+            double lPctRatio = learnPct > 0 ? (double) practicePct / learnPct : 0.6;
+            double rPctRatio = learnPct > 0 ? (double) revisionPct / learnPct : 0.4;
+            
+            double pHrs = estHrs * lPctRatio;
+            double rHrs = estHrs * rPctRatio;
+
             practiceHoursMap.put(topic.getId(), pHrs);
             revisionHoursMap.put(topic.getId(), rHrs);
 
             // Populate trace explanations
-            String exp = priorityService.getAllocationExplanation(topic, userId, daysRemaining, lHrs, pHrs, rHrs);
-            topic.setPriorityScore(score);
+            String exp = priorityService.getAllocationExplanation(topic, userId, daysRemaining, estHrs, pHrs, rHrs);
+            topic.setPriorityScore(priorityScores.get(topic.getId()));
             topic.setAllocationExplanation(exp);
         }
 
         // 7. Chronological simulation loop to interleave study tasks
         List<StudyTask> generatedTasks = new ArrayList<>();
+        int currentTopicIndex = 0;
 
         for (LocalDate date : validStudyDates) {
             double capacity = dailyHours;
 
-            // Step A: Spaced Repetition Revision (schedule if topic completed at least 3 days ago)
+            // Step A: Spaced Repetition Revision (schedule if topic completed at least 2 days ago)
             for (Topic topic : selectedTopics) {
                 int topicId = topic.getId();
                 LocalDate completionDate = topicCompletionDates.get(topicId);
@@ -220,7 +216,7 @@ public class PlannerService {
                 if (completionDate != null && date.isAfter(completionDate)) {
                     double remainingPrac = practiceHoursMap.getOrDefault(topicId, 0.0);
                     if (remainingPrac > 0.05 && capacity > 0.05) {
-                        double time = Math.min(Math.min(2.0, capacity), remainingPrac);
+                        double time = Math.min(Math.min(1.5, capacity), remainingPrac);
                         StudyTask task = new StudyTask();
                         task.setStudyPlanId(plan.getId());
                         task.setTopicId(topicId);
@@ -238,11 +234,13 @@ public class PlannerService {
                 }
             }
 
-            // Step C: Learning (greedy chronological bin packing)
-            for (Topic topic : selectedTopics) {
+            // Step C: Sequential Learning (strictly learn one topic after another in priority order)
+            while (currentTopicIndex < selectedTopics.size() && capacity > 0.05) {
+                Topic topic = selectedTopics.get(currentTopicIndex);
                 int topicId = topic.getId();
                 double remainingLearn = learnHoursMap.getOrDefault(topicId, 0.0);
-                if (remainingLearn > 0.05 && capacity > 0.05) {
+
+                if (remainingLearn > 0.05) {
                     double time = Math.min(capacity, remainingLearn);
                     StudyTask task = new StudyTask();
                     task.setStudyPlanId(plan.getId());
@@ -260,7 +258,10 @@ public class PlannerService {
 
                     if (learnHoursMap.get(topicId) <= 0.05) {
                         topicCompletionDates.put(topicId, date);
+                        currentTopicIndex++; // Move to next topic in priority order
                     }
+                } else {
+                    currentTopicIndex++;
                 }
             }
 
@@ -303,6 +304,21 @@ public class PlannerService {
                         capacity -= time;
                     }
                 }
+            }
+
+            // Step E: General preparation buffer / Mock exams (if slack capacity still remains on this study day)
+            if (capacity > 0.5) {
+                StudyTask task = new StudyTask();
+                task.setStudyPlanId(plan.getId());
+                task.setTopicId(selectedTopics.get(0).getId()); // Use first priority topic as placeholder
+                task.setScheduledDate(date);
+                task.setScheduledHours(capacity);
+                task.setStatus("PENDING");
+                task.setRevision(true);
+                task.setMockTest(true);
+                task.setTaskMode("PRACTICE");
+                task.setAllocationExplanation("Mock Exam & Comprehensive Review Buffer (Slack capacity).");
+                generatedTasks.add(task);
             }
         }
 
