@@ -221,15 +221,7 @@ public class PlannerServlet extends HttpServlet {
                 return;
             }
 
-            // 3.5. Capacity precheck (Total topic hours vs available study capacity)
-            int requiredHours = new com.examora.dao.TopicDAO().getTotalEstimatedHours(selectedTopicIds);
-            int totalRequiredHours = (int) Math.ceil(requiredHours * (100.0 / learnPct));
-            int availableHours = calculateAvailableStudyHours(startDate, endDate, dailyHours, preferredDaysStr);
-            if (availableHours < totalRequiredHours) {
-                out.print("{\"status\":\"ERROR\",\"message\":\"Precheck Failed: The selected topics require " + totalRequiredHours + " total study hours (including practice and revision splits), but your target timeframe only provides " + availableHours + " available hours based on your weekday settings. Please extend your end date, increase daily study hours, or deselect some topics.\"}");
-                out.flush();
-                return;
-            }
+
 
             // 4. Invoke Planner Service to execute greedy distribution
             boolean success = plannerService.generateAndSavePlan(

@@ -149,16 +149,38 @@ public class PlannerService {
             return Double.compare(p2, p1); // Descending order
         });
 
-        // Set target study hours based on actual topic estimated hours
+        // Calculate total available study capacity in hours
+        double availableHours = validStudyDates.size() * dailyHours;
+
+        // Calculate total hours required by selected topics
+        double requiredLearnHours = 0.0;
+        for (Topic topic : selectedTopics) {
+            requiredLearnHours += topic.getEstimatedHours() > 0 ? topic.getEstimatedHours() : 3.0;
+        }
+        double lPctRatioVal = learnPct > 0 ? (double) practicePct / learnPct : 0.6;
+        double rPctRatioVal = learnPct > 0 ? (double) revisionPct / learnPct : 0.4;
+        double totalRequiredHours = requiredLearnHours * (1.0 + lPctRatioVal + rPctRatioVal);
+
+        // Calculate scaling factor if capacity is tight
+        double scalingFactor = 1.0;
+        if (availableHours < totalRequiredHours && availableHours > 0) {
+            scalingFactor = availableHours / totalRequiredHours;
+        }
+
+        // Set target study hours based on scaled topic estimated hours
         Map<Integer, Double> learnHoursMap = new HashMap<>();
         Map<Integer, Double> practiceHoursMap = new HashMap<>();
         Map<Integer, Double> revisionHoursMap = new HashMap<>();
         Map<Integer, LocalDate> topicCompletionDates = new HashMap<>();
 
         for (Topic topic : selectedTopics) {
-            double estHrs = topic.getEstimatedHours() > 0 ? topic.getEstimatedHours() : 3.0;
+            double rawEstHrs = topic.getEstimatedHours() > 0 ? topic.getEstimatedHours() : 3.0;
+            double estHrs = rawEstHrs * scalingFactor;
+            if (estHrs < 0.5) {
+                estHrs = 0.5;
+            }
             
-            // Allocate exact estimated hours for learning
+            // Allocate learning hours
             learnHoursMap.put(topic.getId(), estHrs);
             
             // Practice and revision are proportional to learn hours based on user configuration split ratios
