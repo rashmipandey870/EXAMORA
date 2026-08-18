@@ -195,30 +195,64 @@ public class PlannerServlet extends HttpServlet {
                 } catch (NumberFormatException ignored) {}
             }
 
-            LocalDate targetSyllabusDate = null;
-            LocalDate targetPyqDate = null;
             long totalStudyDays = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+            if (totalStudyDays <= revisionBufferDays * 2) {
+                revisionBufferDays = (int) (totalStudyDays / 4);
+                if (revisionBufferDays < 1) {
+                    revisionBufferDays = 1;
+                }
+            }
 
+            LocalDate targetPyqDate = null;
             if (targetPyqDateStr == null || targetPyqDateStr.trim().isEmpty()) {
                 targetPyqDate = endDate.minusDays(revisionBufferDays);
             } else {
-                targetPyqDate = LocalDate.parse(targetPyqDateStr);
+                try {
+                    targetPyqDate = LocalDate.parse(targetPyqDateStr);
+                } catch (DateTimeParseException e) {
+                    targetPyqDate = endDate.minusDays(revisionBufferDays);
+                }
             }
 
+            LocalDate targetSyllabusDate = null;
             if (targetSyllabusDateStr == null || targetSyllabusDateStr.trim().isEmpty()) {
                 targetSyllabusDate = startDate.plusDays(totalStudyDays / 2);
                 if (!targetSyllabusDate.isBefore(targetPyqDate)) {
                     targetSyllabusDate = startDate.plusDays(totalStudyDays / 3);
                 }
             } else {
-                targetSyllabusDate = LocalDate.parse(targetSyllabusDateStr);
+                try {
+                    targetSyllabusDate = LocalDate.parse(targetSyllabusDateStr);
+                } catch (DateTimeParseException e) {
+                    targetSyllabusDate = startDate.plusDays(totalStudyDays / 3);
+                }
             }
 
-            // Chronological timeline order constraint check
-            if (!startDate.isBefore(targetSyllabusDate) || !targetSyllabusDate.isBefore(targetPyqDate) || targetPyqDate.isAfter(endDate.minusDays(revisionBufferDays))) {
-                out.print("{\"status\":\"ERROR\",\"message\":\"Chronological Validation Failed: Milestones must satisfy: Start Date (" + startDate + ") < Syllabus Completion Target (" + targetSyllabusDate + ") < PYQ Completion Target (" + targetPyqDate + ") <= Exam Target date minus Revision Buffer (" + endDate.minusDays(revisionBufferDays) + "). Please adjust dates accordingly.\"}");
-                out.flush();
-                return;
+            // Automatically resolve milestone timeline constraints if they conflict
+            if (targetSyllabusDate.isBefore(startDate) || targetSyllabusDate.isAfter(endDate)) {
+                targetSyllabusDate = startDate.plusDays(totalStudyDays / 2);
+            }
+            if (targetPyqDate.isBefore(targetSyllabusDate) || targetPyqDate.isAfter(endDate)) {
+                targetPyqDate = endDate.minusDays(revisionBufferDays);
+            }
+            // If they still clash, adjust sequentially
+            if (!startDate.isBefore(targetSyllabusDate)) {
+                targetSyllabusDate = startDate.plusDays(1);
+            }
+            if (!targetSyllabusDate.isBefore(targetPyqDate)) {
+                targetPyqDate = targetSyllabusDate.plusDays(1);
+            }
+            LocalDate maxPyqDate = endDate.minusDays(revisionBufferDays);
+            if (targetPyqDate.isAfter(maxPyqDate)) {
+                targetPyqDate = maxPyqDate;
+                if (!targetSyllabusDate.isBefore(targetPyqDate)) {
+                    long gap = ChronoUnit.DAYS.between(startDate, targetPyqDate);
+                    if (gap >= 2) {
+                        targetSyllabusDate = startDate.plusDays(gap / 2);
+                    } else {
+                        targetSyllabusDate = startDate;
+                    }
+                }
             }
 
 
